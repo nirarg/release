@@ -1,0 +1,26 @@
+binary_build_commands: make manager
+build_root:
+  image_stream_tag:
+    name: release
+    namespace: openshift
+    tag: golang-1.17
+resources:
+  '*':
+    limits:
+      memory: 4Gi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+tests:
+- as: unit-tests
+  commands: GOFLAGS="-mod=readonly" make test
+  container:
+    from: src
+- as: func-tests
+  commands: go mod tidy && go mod vendor && make functest
+  container:
+    from: bin
+zz_generated_metadata:
+  branch: main
+  org: openshift
+  repo: cluster-api-provider-kubevirt
